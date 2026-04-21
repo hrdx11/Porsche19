@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>GT2 RS | Engineering Precision</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://unpkg.com/lenis@1.1.20/dist/lenis.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;900&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        body {
+            background-color: #0A0A0A;
+            color: #e2e2e2;
+            overflow-x: hidden;
+        }
+        @media (pointer: fine) {
+            body.has-custom-cursor {
+                cursor: none;
+            }
+        }
+        body.is-loading {
+            overflow: hidden;
+        }
+        .cursor-dot,
+        .cursor-frame {
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 10000;
+            pointer-events: none;
+            opacity: 1;
+        }
+        .cursor-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #D50000;
+            box-shadow: 0 0 16px rgba(213, 0, 0, 0.76);
+        }
+        .cursor-frame {
+            width: 30px;
+            height: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.32);
+            border-radius: 6px;
+            transform: rotate(45deg);
+        }
+        @media (pointer: coarse) {
+            .cursor-dot,
+            .cursor-frame {
+                display: none;
+            }
+        }
+        .preloader {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background:
+                radial-gradient(circle at 50% 42%, rgba(213, 0, 0, 0.28), transparent 36%),
+                linear-gradient(145deg, #120000 0%, #070707 48%, #0A0A0A 100%);
+            color: white;
+        }
+        .preloader.is-hidden {
+            pointer-events: none;
+        }
+        .preloader-panel {
+            width: min(360px, calc(100vw - 48px));
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 22px;
+        }
+        .preloader-gauge {
+            position: relative;
+            width: 148px;
+            height: 148px;
+            border-radius: 50%;
+            display: grid;
+            place-items: center;
+            background:
+                conic-gradient(from -120deg, #D50000 var(--loader-progress, 0%), rgba(255, 255, 255, 0.08) 0),
+                radial-gradient(circle, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02) 62%, transparent 63%);
+            box-shadow: 0 0 60px rgba(213, 0, 0, 0.24);
+        }
+        .preloader-gauge::before {
+            content: "";
+            width: 112px;
+            height: 112px;
+            border-radius: 50%;
+            background: #090909;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            position: absolute;
+        }
+        .preloader-gauge::after {
+            content: "GT2";
+            position: relative;
+            z-index: 1;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 28px;
+            font-weight: 900;
+            font-style: italic;
+            color: #fff;
+        }
+        .preloader-copy {
+            width: 100%;
+            text-align: center;
+        }
+        .preloader-label {
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.22em;
+            color: rgba(255, 255, 255, 0.58);
+        }
+        .preloader-percent {
+            margin-top: 8px;
+            font-family: "Space Grotesk", sans-serif;
+            font-size: 44px;
+            font-weight: 700;
+            font-style: italic;
+            line-height: 1;
+        }
+        .preloader-track {
+            width: 100%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.12);
+            overflow: hidden;
+        }
+        .preloader-bar {
+            width: var(--loader-progress, 0%);
+            height: 100%;
+            background: #D50000;
+            box-shadow: 0 0 24px rgba(213, 0, 0, 0.8);
+        }
+        html.lenis,
+        html.lenis body {
+            height: auto;
+        }
+        .lenis.lenis-smooth {
+            scroll-behavior: auto !important;
+        }
+        .lenis.lenis-smooth [data-lenis-prevent] {
+            overscroll-behavior: contain;
+        }
+        .lenis.lenis-stopped {
+            overflow: hidden;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-panel {
+            background: rgba(26, 26, 26, 0.7);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-left: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .tech-grid {
+            background-image: radial-gradient(circle, #424242 1px, transparent 1px);
+            background-size: 40px 40px;
+            opacity: 0.1;
+        }
+        .scanline {
+            width: 100%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #D50000, transparent);
+            position: absolute;
+            top: 0;
+            left: 0;
+            opacity: 0.3;
+        }
+        .sequence-card {
+            --panel-shadow-y: 28px;
+            --panel-shadow-blur: 70px;
+            --panel-shadow-opacity: 0.58;
+            --panel-red-opacity: 0.12;
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            isolation: isolate;
+            overflow: hidden;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.14);
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)),
+                rgba(8, 8, 8, 0.74);
+            backdrop-filter: blur(20px);
+            box-shadow:
+                0 var(--panel-shadow-y) var(--panel-shadow-blur) rgba(0, 0, 0, var(--panel-shadow-opacity)),
+                -12px 18px 70px rgba(213, 0, 0, var(--panel-red-opacity));
+            transform-style: preserve-3d;
+            transform-origin: right center;
+        }
+        .sequence-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background:
+                linear-gradient(90deg, rgba(213, 0, 0, 0.34), transparent 42%),
+                radial-gradient(circle at 78% 42%, rgba(213, 0, 0, 0.22), transparent 50%);
+            opacity: 0.55;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .sequence-card::after {
+            content: "";
+            position: absolute;
+            inset: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            pointer-events: none;
+            z-index: 3;
+        }
+        #car-sequence {
+            --depth-shadow-x: 0px;
+            --depth-shadow-y: 12px;
+            --depth-shadow-blur: 14px;
+            --depth-shadow-opacity: 0.26;
+            --ambient-shadow-blur: 22px;
+            --ambient-shadow-opacity: 0.22;
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            height: auto;
+            display: block;
+            filter:
+                contrast(1.08)
+                saturate(1.1)
+                drop-shadow(var(--depth-shadow-x) var(--depth-shadow-y) var(--depth-shadow-blur) rgba(0, 0, 0, var(--depth-shadow-opacity)))
+                drop-shadow(0 28px var(--ambient-shadow-blur) rgba(213, 0, 0, var(--ambient-shadow-opacity)));
+        }
+        .sequence-fallback {
+            position: absolute;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            opacity: 0;
+            pointer-events: none;
+        }
+        .car-stage {
+            position: absolute;
+            right: clamp(32px, 5vw, 96px);
+            bottom: clamp(56px, 10vh, 104px);
+            width: clamp(340px, 36vw, 520px);
+            height: auto;
+            aspect-ratio: 16 / 9;
+            perspective: 1200px;
+            pointer-events: none;
+            z-index: 30;
+        }
+        .car-stage .engine-hud {
+            top: clamp(-150px, -14vh, -88px) !important;
+            right: calc(100% + clamp(24px, 3vw, 48px)) !important;
+        }
+        .car-stage .engine-hud > .glass-panel {
+            width: clamp(280px, 24vw, 320px) !important;
+        }
+        .car-stage .callout-engine {
+            top: 18% !important;
+            right: -34px !important;
+        }
+        .car-stage .callout-wheels {
+            bottom: 2% !important;
+            left: -42px !important;
+        }
+        .scroll-meter {
+            transform-origin: top center;
+        }
+        /* Glassy 911 watermark */
+        .glass-911 {
+            position: relative;
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(200px, 28vw, 420px);
+            font-weight: 900;
+            font-style: italic;
+            line-height: 1;
+            color: transparent;
+            background: linear-gradient(
+                180deg,
+                rgba(255, 255, 255, 0.35) 0%,
+                rgba(213, 0, 0, 0.40) 45%,
+                rgba(255, 255, 255, 0.12) 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 80px rgba(213, 0, 0, 0.50))
+                    drop-shadow(0 0 160px rgba(213, 0, 0, 0.25));
+            text-shadow: none;
+            letter-spacing: 0.04em;
+            user-select: none;
+        }
+        .glass-911::before {
+            content: '911';
+            position: absolute;
+            inset: 0;
+            font: inherit;
+            color: transparent;
+            background: linear-gradient(
+                135deg,
+                rgba(255, 255, 255, 0.12) 0%,
+                rgba(255, 255, 255, 0.03) 50%,
+                rgba(213, 0, 0, 0.08) 100%
+            );
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: blur(2px);
+            z-index: -1;
+        }
+        .glass-911::after {
+            content: '911';
+            position: absolute;
+            inset: 0;
+            font: inherit;
+            color: transparent;
+            -webkit-text-stroke: 1px rgba(255, 255, 255, 0.08);
+            z-index: -2;
+        }
+        .glass-911-wrap {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 10;
+            overflow: hidden;
+        }
+        .glass-911-backdrop {
+            position: absolute;
+            width: 70%;
+            height: 55%;
+            border-radius: 50%;
+            background: radial-gradient(
+                ellipse at center,
+                rgba(213, 0, 0, 0.08) 0%,
+                transparent 70%
+            );
+            filter: blur(60px);
+            z-index: -1;
+        }
+        @media (max-width: 768px) {
+            header {
+                padding-left: 1rem !important;
+                padding-right: 1rem !important;
+            }
+            aside {
+                display: none !important;
+            }
+            .glass-panel {
+                backdrop-filter: blur(14px);
+            }
+            #car-sequence,
+            .sequence-fallback {
+                width: 100%;
+                max-width: none;
+            }
+            .car-stage {
+                right: 1rem;
+                left: 1rem;
+                top: auto;
+                bottom: 5.5rem;
+                width: auto;
+            }
+            .engine-hud,
+            .callout-engine,
+            .callout-wheels {
+                display: none !important;
+            }
+        }
+        @media (min-width: 769px) and (max-width: 1180px) {
+            .car-stage {
+                right: 2rem;
+                width: clamp(320px, 34vw, 420px);
+            }
+            .car-stage .engine-hud {
+                top: -112px !important;
+                right: calc(100% + 18px) !important;
+            }
+            .car-stage .engine-hud > .glass-panel {
+                width: 280px !important;
+                padding: 1.125rem !important;
+            }
+            .car-stage .engine-hud svg {
+                width: 9rem !important;
+                height: 9rem !important;
+            }
+            .car-stage .engine-hud .text-4xl {
+                font-size: 1.75rem !important;
+                line-height: 2rem !important;
+            }
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary": "#ffb4a8",
+                      "on-surface-variant": "#e8bcb5",
+                      "tertiary-fixed": "#e4e2e1",
+                      "surface-tint": "#ffb4a8",
+                      "error": "#ffb4ab",
+                      "on-primary-fixed": "#410000",
+                      "on-tertiary-container": "#ebe9e9",
+                      "on-background": "#e2e2e2",
+                      "outline": "#af8781",
+                      "surface-container-low": "#1a1c1c",
+                      "on-secondary": "#313030",
+                      "surface-dim": "#121414",
+                      "surface-container-highest": "#333535",
+                      "outline-variant": "#5e3f3a",
+                      "on-error": "#690005",
+                      "inverse-primary": "#c00000",
+                      "background": "#121414",
+                      "surface-container-high": "#282a2b",
+                      "secondary-fixed": "#e5e2e1",
+                      "on-primary-fixed-variant": "#930000",
+                      "on-surface": "#e2e2e2",
+                      "inverse-on-surface": "#2f3131",
+                      "tertiary": "#c8c6c6",
+                      "on-primary-container": "#ffe4e0",
+                      "tertiary-container": "#696969",
+                      "on-tertiary-fixed-variant": "#474747",
+                      "on-secondary-container": "#bab8b7",
+                      "on-secondary-fixed": "#1c1b1b",
+                      "surface-container": "#1e2020",
+                      "inverse-surface": "#e2e2e2",
+                      "on-primary": "#690000",
+                      "surface-variant": "#333535",
+                      "secondary-fixed-dim": "#c9c6c5",
+                      "on-error-container": "#ffdad6",
+                      "surface": "#121414",
+                      "secondary-container": "#4a4949",
+                      "primary-fixed-dim": "#ffb4a8",
+                      "primary-fixed": "#ffdad4",
+                      "primary-container": "#d50000",
+                      "on-tertiary": "#303030",
+                      "on-secondary-fixed-variant": "#474646",
+                      "tertiary-fixed-dim": "#c8c6c6",
+                      "surface-bright": "#37393a",
+                      "on-tertiary-fixed": "#1b1c1c",
+                      "error-container": "#93000a",
+                      "surface-container-lowest": "#0c0f0f",
+                      "secondary": "#c9c6c5"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "stack-xs": "8px",
+                      "stack-lg": "48px",
+                      "gutter": "24px",
+                      "stack-md": "24px",
+                      "margin": "48px",
+                      "container-max": "1440px",
+                      "unit": "4px"
+              },
+              "fontFamily": {
+                      "headline-md": ["Space Grotesk"],
+                      "headline-lg": ["Space Grotesk"],
+                      "label-caps": ["Space Grotesk"],
+                      "display-lg": ["Space Grotesk"],
+                      "body-lg": ["Inter"],
+                      "technical-data": ["Space Grotesk"],
+                      "body-md": ["Inter"],
+                      "display-md": ["Space Grotesk"]
+              },
+              "fontSize": {
+                      "headline-md": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                      "label-caps": ["12px", {"lineHeight": "1", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                      "display-lg": ["72px", {"lineHeight": "1.1", "letterSpacing": "0", "fontWeight": "700"}],
+                      "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "technical-data": ["14px", {"lineHeight": "1", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "display-md": ["48px", {"lineHeight": "1.1", "letterSpacing": "0", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+    </script>
+</head>
+<body class="is-loading font-body-md text-on-surface selection:bg-primary-container selection:text-white">
+<div class="cursor-dot" id="cursor-dot"></div>
+<div class="cursor-frame" id="cursor-frame"></div>
+<div class="preloader" id="preloader">
+<div class="preloader-panel">
+<div class="preloader-gauge"></div>
+<div class="preloader-copy">
+<div class="preloader-label">INITIALIZING COMPONENT CACHE</div>
+<div class="preloader-percent" id="preloader-percent">000%</div>
+</div>
+<div class="preloader-track">
+<div class="preloader-bar"></div>
+</div>
+</div>
+</div>
+<!-- Top Navigation Bar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center px-12 py-4 bg-[#0A0A0A]/80 backdrop-blur-[20px] border-b border-[#424242] shadow-[0px_4px_12px_rgba(0,0,0,0.5)]">
+<div class="text-2xl font-black text-white tracking-tighter italic">GT2 RS</div>
+<nav class="hidden md:flex gap-12">
+<a class="font-label-caps text-[12px] uppercase tracking-[0.2em] font-bold text-[#D50000] border-b-2 border-[#D50000] pb-1" href="#">Engineering</a>
+<a class="font-label-caps text-[12px] uppercase tracking-[0.2em] font-bold text-white/60 hover:text-white transition-colors" href="#">Aesthetics</a>
+<a class="font-label-caps text-[12px] uppercase tracking-[0.2em] font-bold text-white/60 hover:text-white transition-colors" href="#">Performance</a>
+</nav>
+<button class="bg-[#D50000] text-white font-label-caps text-[12px] uppercase tracking-[0.2em] font-bold py-2 px-6 rounded-lg scale-95 active:scale-90 transition-transform">
+            RESERVE NOW
+        </button>
+</header>
+<!-- Technical Side Progress Bar -->
+<aside class="fixed right-12 top-1/2 -translate-y-1/2 z-50 flex flex-col items-center gap-0">
+<div class="flex flex-col items-center mb-8 rotate-90 origin-center whitespace-nowrap">
+<span class="font-headline-md text-[#D50000] tracking-tighter italic">GT2 RS</span>
+<span class="font-label-caps text-[8px] text-white/40 tracking-[0.3em]">TECHNICAL SPEC</span>
+</div>
+<div class="flex flex-col items-center gap-4">
+<div class="group flex items-center gap-4 relative">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 font-label-caps text-[10px] transition-opacity uppercase text-[#D50000]">Overview</span>
+<div class="w-[3px] h-8 bg-[#D50000] -ml-[1px] scroll-meter"></div>
+</div>
+<div class="group flex items-center gap-4 relative">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 font-label-caps text-[10px] transition-opacity uppercase text-white/40">Engineering</span>
+<div class="w-[1px] h-12 bg-[#424242] hover:bg-[#D50000]/50"></div>
+</div>
+<div class="group flex items-center gap-4 relative">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 font-label-caps text-[10px] transition-opacity uppercase text-white/40">Aesthetics</span>
+<div class="w-[1px] h-12 bg-[#424242] hover:bg-[#D50000]/50"></div>
+</div>
+<div class="group flex items-center gap-4 relative">
+<span class="absolute right-8 opacity-0 group-hover:opacity-100 font-label-caps text-[10px] transition-opacity uppercase text-white/40">Performance</span>
+<div class="w-[1px] h-12 bg-[#424242] hover:bg-[#D50000]/50"></div>
+</div>
+</div>
+</aside>
+<!-- Hero Section with Background Grid -->
+<main class="relative">
+<!-- Persistent Tech Grid Layer -->
+<div class="fixed inset-0 tech-grid pointer-events-none z-0"></div>
+<div class="fixed inset-0 bg-gradient-to-b from-[#0A0A0A] via-[#1a0000] to-[#0A0A0A] pointer-events-none z-0"></div>
+<!-- Sticky Interaction Zone -->
+<section class="h-[4096px] relative exploded-scroll">
+<div class="sticky top-0 h-screen w-full flex items-center justify-center overflow-hidden">
+<!-- Telemetry HUD Layer -->
+<div class="absolute top-24 left-12 z-20 flex flex-col gap-4 hud-left">
+<div class="glass-panel p-4 border-l-2 border-l-[#D50000]">
+<div class="font-label-caps text-[10px] text-white/40">ENGINE_LOAD</div>
+<div class="font-technical-data text-2xl text-white">98.4<span class="text-xs text-white/40 ml-1">%</span></div>
+</div>
+<div class="glass-panel p-4 border-l-2 border-l-[#D50000]">
+<div class="font-label-caps text-[10px] text-white/40">BOOST_PRESSURE</div>
+<div class="font-technical-data text-2xl text-white">1.6<span class="text-xs text-white/40 ml-1">BAR</span></div>
+</div>
+</div>
+<div class="absolute bottom-12 left-12 z-20 chassis-note">
+<div class="glass-panel p-6 max-w-xs">
+<div class="font-label-caps text-[10px] text-[#D50000] mb-2">CHASSIS CONFIGURATION</div>
+<p class="font-body-md text-xs text-white/70 leading-relaxed uppercase tracking-wider">Active suspension management with race-optimized damping curves. Precision-milled components for maximum weight reduction.</p>
+</div>
+</div>
+<!-- Central Car Experience: Exploded Layers -->
+<div class="car-stage">
+<!-- Scroll-driven car sequence -->
+<div class="sequence-card z-30">
+<canvas aria-label="Scroll-driven exploded Porsche component sequence" id="car-sequence" width="1280" height="720"></canvas>
+<img alt="Exploded Porsche component frame fallback" class="sequence-fallback" src="IMG/ezgif-frame-001.jpg"/>
+</div>
+<!-- Technical Floating Callouts -->
+<!-- Callout 1: Engine -->
+<div class="absolute top-1/4 right-[15%] z-40 flex items-center group callout-engine">
+<div class="w-16 h-[1px] bg-white/40 origin-left -rotate-45"></div>
+<div class="glass-panel p-3 border-r-2 border-r-[#D50000] transform -translate-y-8">
+<span class="font-label-caps text-[9px] text-[#D50000] block">POWER_UNIT</span>
+<span class="font-technical-data text-white text-sm">4.0L FLAT-SIX TWIN TURBO</span>
+</div>
+</div><!-- Engine Telemetry HUD -->
+<div class="absolute top-1/4 right-[28%] z-40 flex flex-col gap-4 engine-hud">
+<div class="glass-panel p-6 border-t-2 border-t-[#D50000] w-80">
+<div class="flex justify-between items-start mb-6">
+<div class="font-label-caps text-[10px] text-[#D50000]">ENGINE_TELEMETRY_V2.0</div>
+<div class="flex gap-1">
+<div class="w-1 h-1 bg-[#D50000] animate-pulse"></div>
+<div class="w-1 h-1 bg-[#D50000]/40"></div>
+<div class="w-1 h-1 bg-[#D50000]/40"></div>
+</div>
+</div>
+<!-- Cinematic Tachometer -->
+<div class="relative flex items-center justify-center mb-8">
+<svg class="w-48 h-48 -rotate-90" viewbox="0 0 100 100">
+<!-- Track -->
+<circle cx="50" cy="50" fill="none" r="45" stroke="rgba(255,255,255,0.05)" stroke-width="2"></circle>
+<!-- Progress (Revving state) -->
+<circle class="opacity-80" cx="50" cy="50" fill="none" r="45" stroke="#D50000" stroke-dasharray="210 283" stroke-linecap="square" stroke-width="4"></circle>
+<!-- Redline indicators -->
+<path d="M 95 50 A 45 45 0 0 1 81.8 81.8" fill="none" stroke="#D50000" stroke-dasharray="2 4" stroke-width="8"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-technical-data text-4xl text-white italic">7,850</span>
+<span class="font-label-caps text-[8px] text-white/40">LIVE_RPM</span>
+</div>
+<!-- Needle Glitch Effect -->
+<div class="absolute w-[2px] h-24 bg-white/40 bottom-1/2 left-1/2 origin-bottom rotate-[140deg] blur-[1px]"></div>
+</div>
+<!-- Digital Readouts with Sparklines -->
+<div class="space-y-4">
+<div class="flex items-center justify-between">
+<div>
+<div class="font-label-caps text-[8px] text-white/40">BOOST_PRESSURE (BAR)</div>
+<div class="font-technical-data text-lg text-white">1.62</div>
+</div>
+<svg class="w-24 h-6" viewbox="0 0 100 20">
+<path class="opacity-60" d="M0 15 L10 12 L20 18 L30 10 L40 14 L50 5 L60 12 L70 8 L80 15 L90 5 L100 10" fill="none" stroke="#D50000" stroke-width="1">
+<animate attributename="d" dur="2s" repeatcount="indefinite" values="M0 15 L10 12 L20 18 L30 10 L40 14 L50 5 L60 12 L70 8 L80 15 L90 5 L100 10; M0 12 L10 18 L20 10 L30 15 L40 5 L50 14 L60 8 L70 12 L80 5 L90 15 L100 8; M0 15 L10 12 L20 18 L30 10 L40 14 L50 5 L60 12 L70 8 L80 15 L90 5 L100 10"></animate>
+</path>
+</svg>
+</div>
+<div class="flex items-center justify-between">
+<div>
+<div class="font-label-caps text-[8px] text-white/40">OIL_TEMP (&deg;C)</div>
+<div class="font-technical-data text-lg text-white">98.0</div>
+</div>
+<svg class="w-24 h-6" viewbox="0 0 100 20">
+<path class="opacity-40" d="M0 10 L20 12 L40 11 L60 13 L80 12 L100 11" fill="none" stroke="#D50000" stroke-width="1">
+<animate attributename="d" dur="3s" repeatcount="indefinite" values="M0 10 L20 12 L40 11 L60 13 L80 12 L100 11; M0 11 L20 10 L40 12 L60 11 L80 13 L100 12; M0 10 L20 12 L40 11 L60 13 L80 12 L100 11"></animate>
+</path>
+</svg>
+</div>
+</div>
+</div>
+</div>
+<!-- Callout 2: Wheels -->
+<div class="absolute bottom-1/4 left-[20%] z-40 flex items-center flex-row-reverse group callout-wheels">
+<div class="w-24 h-[1px] bg-white/40 origin-right rotate-45"></div>
+<div class="glass-panel p-3 border-l-2 border-l-[#D50000] transform translate-y-12">
+<span class="font-label-caps text-[9px] text-[#D50000] block">CONTACT_POINT</span>
+<span class="font-technical-data text-white text-sm">MAGNESIUM CENTER-LOCK</span>
+</div>
+</div>
+<!-- Scanline Overlay -->
+<div class="absolute inset-0 pointer-events-none z-50 overflow-hidden opacity-20">
+<div class="scanline animate-pulse"></div>
+</div>
+</div>
+<!-- Large Background Typography -->
+<div class="glass-911-wrap bg-911">
+<div class="glass-911-backdrop"></div>
+<h1 class="glass-911">911</h1>
+</div>
+</div>
+</section>
+<!-- Technical Specification Bento Grid -->
+<section class="relative z-10 px-12 py-24 bg-[#0A0A0A]">
+<div class="max-w-container-max mx-auto">
+<div class="mb-16">
+<span class="font-label-caps text-[#D50000]">CHAPTER_01</span>
+<h2 class="font-display-md text-white uppercase italic mt-4">RAW ENGINEERING DATA</h2>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- High Impact Card -->
+<div class="col-span-12 lg:col-span-8 h-[500px] glass-panel relative overflow-hidden group p-8 flex flex-col justify-end">
+<img class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-30 group-hover:scale-105 transition-transform duration-700" data-alt="Extreme close up of a turbocharged engine's heat shield with glowing metal and technical industrial textures" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCiZbIDrOgMMyDeUNvg5QmDw2I9uEzu2pxA_fJnWZ6vCwyZV8ftRP3auZtYNA5zjVM0_8e2ylyjxyh8pv8rTVLxDmtPEJeIAv3bexXsS3VhX9OHbjjJ9XbjdA94ttVSoH3iIAneaq__tZBU2WRVpA68-GzTHNddKZMLpT_vJ5VSPdt27c96zzS92YbmeTX8J5tpuxfcA9J3M-7ljleOsKZgb-m9STkPuYWxPy8MG0gN35Te1Yo0SkSJi2UFxjQTdPyaQtGUcMWXdKeq"/>
+<div class="relative z-10">
+<h3 class="font-display-md text-white">700 HP / 553 LB-FT</h3>
+<p class="font-body-lg text-white/60 max-w-md mt-4">The most powerful street-legal 911 ever produced. A masterpiece of thermal management and aerodynamic efficiency.</p>
+</div>
+</div>
+<!-- Performance Stats Bento -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<div class="flex-1 glass-panel p-8 flex flex-col justify-center border-b-4 border-b-[#D50000]">
+<span class="font-label-caps text-white/40">0-60 MPH</span>
+<span class="font-display-lg text-white">2.7s</span>
+</div>
+<div class="flex-1 glass-panel p-8 flex flex-col justify-center">
+<span class="font-label-caps text-white/40">TOP SPEED</span>
+<span class="font-display-lg text-white">211</span>
+<span class="font-label-caps text-[#D50000]">MPH</span>
+</div>
+</div>
+<!-- Aero Components Section -->
+<div class="col-span-12 lg:col-span-4 glass-panel p-8">
+<div class="w-full h-48 bg-black/40 mb-6 flex items-center justify-center border border-white/5">
+<img class="h-full w-full object-cover grayscale opacity-60" data-alt="Detailed view of a rear carbon fiber spoiler with aerodynamic winglets against a dark background" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDMyaQAztdtX25bAPmKDZ4ipwzhYbRlVShMMK-HMOfQPCWR_44GAfzZNad1K78wElUEaN0Fi4LnLwopmaP-gbaPUz0IFeiQ1sLGq4p1JapuVXi4KN029mze_nzvLyDW1fZTXrEMW-eN42NRLjDBy4_EP6A4T7Y75b_GPz6QfNdXPyQPjXEXyD_R0cru59VmdIde5lgd_EnpmjKUQjk9X7dS7DefzsRAkXng7SHUqpiH0YSkdndRyFNsuuXaLFQfcoxfIXyoGn2hIuXa"/>
+</div>
+<span class="font-label-caps text-[#D50000] mb-2 block">AERODYNAMICS</span>
+<h4 class="font-headline-md text-white mb-4 uppercase">Downforce Control</h4>
+<p class="font-body-md text-sm text-white/60 leading-relaxed uppercase tracking-wider">Optimized carbon fiber components generate up to 450kg of downforce at maximum velocity.</p>
+</div>
+<div class="col-span-12 lg:col-span-8 glass-panel p-8 flex items-center gap-12">
+<div class="flex-1">
+<span class="font-label-caps text-[#D50000] mb-2 block">MATERIALS</span>
+<h4 class="font-headline-md text-white mb-4 uppercase">The Weissach Package</h4>
+<p class="font-body-md text-sm text-white/60 leading-relaxed uppercase tracking-wider">Magnesium wheels, titanium roll cage, and extensive carbon fiber application reduce curb weight by 30kg, pushing the limits of the power-to-weight ratio.</p>
+</div>
+<div class="hidden md:block w-1/3">
+<div class="aspect-square glass-panel flex items-center justify-center p-4">
+<span class="material-symbols-outlined text-6xl text-[#D50000]">precision_manufacturing</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- High Octane Call-to-Action -->
+<section class="relative h-screen flex items-center justify-center overflow-hidden">
+<img class="absolute inset-0 w-full h-full object-cover opacity-20" data-alt="Dynamic shot of a red luxury sports car speeding on a dark race track at night with long exposure light trails" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD2M4vomTKxosZx3Y_2kSEHTJdLU-cij-1jZIew6umNIvVVTMC6FYuJg2sPlBxTFi_DFGik0sq_IQRtb792VAjE3vIsauIJf1Z26tIXtdMZ5-2khE_g-o8as8RMr8YL5ptze1cnfqftIHf0aQAak1QjIVFsa1_CINjgsfgeSoQoFN6OJZkFebs5q_IuRUCnq1VdToRJfJgkOPisuVkajG38_XmxZpa6uDAU0S0ifYsT6eSeizM9MBcINi5KtD5Slv-d8hmNXqJDBl-P"/>
+<div class="relative z-10 text-center max-w-4xl px-12">
+<span class="font-label-caps text-[#D50000] tracking-[0.4em] mb-8 block">THE ULTIMATE EVOLUTION</span>
+<h2 class="font-display-lg text-white mb-12 italic uppercase leading-none">READY FOR THE CIRCUIT?</h2>
+<div class="flex flex-col md:flex-row items-center justify-center gap-8">
+<button class="bg-[#D50000] text-white font-label-caps py-6 px-12 rounded-lg text-sm tracking-widest hover:brightness-110 transition-all uppercase w-full md:w-auto">
+                        CONFIGURE YOUR SPEC
+                    </button>
+<button class="border border-[#424242] text-white font-label-caps py-6 px-12 rounded-lg text-sm tracking-widest hover:bg-white hover:text-black transition-all uppercase w-full md:w-auto">
+                        CONTACT DEALER
+                    </button>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer Section -->
+<footer class="w-full px-12 py-8 flex flex-col md:flex-row justify-between items-center gap-4 bg-[#0A0A0A] border-t border-white/5 font-['Space_Grotesk'] text-[10px] uppercase tracking-widest text-white/40">
+<div class="text-white font-bold">GT2 RS</div>
+<div class="flex flex-wrap justify-center gap-8">
+<a class="text-white/40 hover:text-[#D50000] transition-colors" href="#">Legal</a>
+<a class="text-white/40 hover:text-[#D50000] transition-colors" href="#">Privacy</a>
+<a class="text-white/40 hover:text-[#D50000] transition-colors" href="#">Cookies</a>
+<a class="text-white/40 hover:text-[#D50000] transition-colors" href="#">Dealer Locator</a>
+</div>
+<div class="text-center md:text-right">
+            &copy; 2024 PORSCHE PERFORMANCE DIVISION. ALL RIGHTS RESERVED.
+        </div>
+</footer>
+<!-- Cinematic Mode Toggle -->
+<div class="fixed bottom-12 right-12 z-[100] flex flex-col items-end gap-3">
+<button aria-pressed="false" class="sound-toggle glass-panel flex items-center gap-2 rounded-lg border-white/20 px-4 py-3 text-white active:scale-95 transition-transform" id="sound-toggle" type="button">
+<span class="material-symbols-outlined text-xl text-[#D50000]" id="sound-icon">volume_off</span>
+<span class="font-label-caps text-[10px] uppercase tracking-[0.18em]" id="sound-label">Enable Sound</span>
+</button>
+<button class="w-12 h-12 glass-panel rounded-full flex items-center justify-center group border-white/20 active:scale-90 transition-transform">
+<span class="material-symbols-outlined text-white text-xl group-hover:text-[#D50000]">videocam</span>
+</button>
+</div>
+<script>
+        window.addEventListener("DOMContentLoaded", () => {
+            if (!window.gsap || !window.ScrollTrigger || !window.Lenis) {
+                document.body.classList.remove("is-loading");
+                document.getElementById("preloader")?.remove();
+                return;
+            }
+
+            gsap.registerPlugin(ScrollTrigger);
+
+            function initMicroInteractions() {
+                if (!window.matchMedia("(pointer: fine)").matches) {
+                    return;
+                }
+
+                const cursorDot = document.getElementById("cursor-dot");
+                const cursorFrame = document.getElementById("cursor-frame");
+                if (!cursorDot || !cursorFrame) {
+                    return;
+                }
+
+                document.body.classList.add("has-custom-cursor");
+                gsap.set([cursorDot, cursorFrame], { xPercent: -50, yPercent: -50 });
+
+                const dotX = gsap.quickTo(cursorDot, "x", { duration: 0.12, ease: "power3.out" });
+                const dotY = gsap.quickTo(cursorDot, "y", { duration: 0.12, ease: "power3.out" });
+                const frameX = gsap.quickTo(cursorFrame, "x", { duration: 0.38, ease: "power3.out" });
+                const frameY = gsap.quickTo(cursorFrame, "y", { duration: 0.38, ease: "power3.out" });
+
+                window.addEventListener("mousemove", (event) => {
+                    dotX(event.clientX);
+                    dotY(event.clientY);
+                    frameX(event.clientX);
+                    frameY(event.clientY);
+                });
+
+                const magneticTargets = gsap.utils.toArray(
+                    ".callout-engine, .callout-wheels, .engine-hud .glass-panel, .hud-left .glass-panel, .chassis-note .glass-panel"
+                );
+
+                magneticTargets.forEach((target) => {
+                    target.style.transformStyle = "preserve-3d";
+                    target.style.willChange = "transform";
+
+                    target.addEventListener("mouseenter", () => {
+                        gsap.to(cursorFrame, {
+                            width: 48,
+                            height: 48,
+                            borderRadius: 8,
+                            borderColor: "rgba(213, 0, 0, 0.76)",
+                            duration: 0.22,
+                            ease: "power3.out"
+                        });
+                        gsap.to(cursorDot, {
+                            scale: 0.75,
+                            duration: 0.22,
+                            ease: "power3.out"
+                        });
+                    });
+
+                    target.addEventListener("mousemove", (event) => {
+                        const rect = target.getBoundingClientRect();
+                        const relativeX = event.clientX - rect.left - rect.width / 2;
+                        const relativeY = event.clientY - rect.top - rect.height / 2;
+
+                        gsap.to(target, {
+                            x: relativeX * 0.08,
+                            y: relativeY * 0.08,
+                            rotateX: gsap.utils.clamp(-5, 5, -relativeY / 22),
+                            rotateY: gsap.utils.clamp(-5, 5, relativeX / 22),
+                            duration: 0.32,
+                            ease: "power3.out",
+                            overwrite: true
+                        });
+                    });
+
+                    target.addEventListener("mouseleave", () => {
+                        gsap.to(target, {
+                            x: 0,
+                            y: 0,
+                            rotateX: 0,
+                            rotateY: 0,
+                            duration: 0.5,
+                            ease: "elastic.out(1, 0.5)",
+                            overwrite: true
+                        });
+                        gsap.to(cursorFrame, {
+                            width: 30,
+                            height: 30,
+                            borderRadius: 6,
+                            borderColor: "rgba(255, 255, 255, 0.32)",
+                            duration: 0.24,
+                            ease: "power3.out"
+                        });
+                        gsap.to(cursorDot, {
+                            scale: 1,
+                            duration: 0.24,
+                            ease: "power3.out"
+                        });
+                    });
+                });
+            }
+
+            initMicroInteractions();
+
+            const lenis = new Lenis({
+                duration: 1.35,
+                easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
+                smoothWheel: true,
+                wheelMultiplier: 0.85,
+                touchMultiplier: 1.1
+            });
+            lenis.stop();
+
+            lenis.on("scroll", ScrollTrigger.update);
+            gsap.ticker.add((time) => lenis.raf(time * 1000));
+            gsap.ticker.lagSmoothing(0);
+
+            const preloader = document.getElementById("preloader");
+            const preloaderPercent = document.getElementById("preloader-percent");
+            const canvas = document.getElementById("car-sequence");
+            const context = canvas.getContext("2d");
+            const frameCount = 240;
+            const sequence = { frame: 0 };
+            const images = [];
+            const framePath = (index) => `IMG/ezgif-frame-${String(index + 1).padStart(3, "0")}.jpg`;
+            const minimumPreloaderTime = new Promise((resolve) => window.setTimeout(resolve, 1800));
+            const soundToggle = document.getElementById("sound-toggle");
+            const soundIcon = document.getElementById("sound-icon");
+            const soundLabel = document.getElementById("sound-label");
+            let audioContext;
+            let soundEnabled = false;
+            let explodedCueArmed = true;
+            let lastRenderedFrame = -1;
+            let loadedFrames = 0;
+
+            function getAudioContext() {
+                if (!audioContext) {
+                    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContextClass) {
+                        return null;
+                    }
+                    audioContext = new AudioContextClass();
+                }
+                return audioContext;
+            }
+
+            function playExplodedCue() {
+                if (!soundEnabled) {
+                    return;
+                }
+
+                const context = getAudioContext();
+                if (!context) {
+                    return;
+                }
+
+                const start = context.currentTime;
+                const master = context.createGain();
+                master.gain.setValueAtTime(0.0001, start);
+                master.gain.exponentialRampToValueAtTime(0.18, start + 0.03);
+                master.gain.exponentialRampToValueAtTime(0.0001, start + 0.85);
+                master.connect(context.destination);
+
+                const click = context.createOscillator();
+                const clickGain = context.createGain();
+                click.type = "triangle";
+                click.frequency.setValueAtTime(420, start);
+                click.frequency.exponentialRampToValueAtTime(96, start + 0.12);
+                clickGain.gain.setValueAtTime(0.0001, start);
+                clickGain.gain.exponentialRampToValueAtTime(0.16, start + 0.01);
+                clickGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.16);
+                click.connect(clickGain).connect(master);
+                click.start(start);
+                click.stop(start + 0.18);
+
+                const hum = context.createOscillator();
+                const humGain = context.createGain();
+                hum.type = "sine";
+                hum.frequency.setValueAtTime(48, start);
+                hum.frequency.exponentialRampToValueAtTime(34, start + 0.72);
+                humGain.gain.setValueAtTime(0.0001, start);
+                humGain.gain.exponentialRampToValueAtTime(0.12, start + 0.08);
+                humGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.78);
+                hum.connect(humGain).connect(master);
+                hum.start(start);
+                hum.stop(start + 0.82);
+
+                const noiseBuffer = context.createBuffer(1, context.sampleRate * 0.55, context.sampleRate);
+                const noiseData = noiseBuffer.getChannelData(0);
+                for (let index = 0; index < noiseData.length; index += 1) {
+                    noiseData[index] = (Math.random() * 2 - 1) * (1 - index / noiseData.length);
+                }
+
+                const swoosh = context.createBufferSource();
+                const swooshFilter = context.createBiquadFilter();
+                const swooshGain = context.createGain();
+                swoosh.buffer = noiseBuffer;
+                swooshFilter.type = "bandpass";
+                swooshFilter.frequency.setValueAtTime(1200, start + 0.05);
+                swooshFilter.frequency.exponentialRampToValueAtTime(280, start + 0.5);
+                swooshFilter.Q.setValueAtTime(0.8, start);
+                swooshGain.gain.setValueAtTime(0.0001, start + 0.05);
+                swooshGain.gain.exponentialRampToValueAtTime(0.065, start + 0.14);
+                swooshGain.gain.exponentialRampToValueAtTime(0.0001, start + 0.58);
+                swoosh.connect(swooshFilter).connect(swooshGain).connect(master);
+                swoosh.start(start + 0.04);
+                swoosh.stop(start + 0.62);
+            }
+
+            function updateSoundButton() {
+                if (!soundToggle) {
+                    return;
+                }
+                soundToggle.setAttribute("aria-pressed", String(soundEnabled));
+                if (soundIcon) {
+                    soundIcon.textContent = soundEnabled ? "volume_up" : "volume_off";
+                }
+                if (soundLabel) {
+                    soundLabel.textContent = soundEnabled ? "Sound On" : "Enable Sound";
+                }
+            }
+
+            soundToggle?.addEventListener("click", async () => {
+                const context = getAudioContext();
+                if (!context) {
+                    return;
+                }
+
+                if (context.state === "suspended") {
+                    await context.resume();
+                }
+
+                soundEnabled = !soundEnabled;
+                updateSoundButton();
+            });
+
+            updateSoundButton();
+
+            function updatePreloader() {
+                const progress = Math.round((loadedFrames / frameCount) * 100);
+                const display = String(progress).padStart(3, "0");
+                if (preloader) {
+                    preloader.style.setProperty("--loader-progress", `${progress}%`);
+                }
+                if (preloaderPercent) {
+                    preloaderPercent.textContent = `${display}%`;
+                }
+            }
+
+            const windowLoaded = new Promise((resolve) => {
+                if (document.readyState === "complete") {
+                    resolve();
+                    return;
+                }
+                window.addEventListener("load", resolve, { once: true });
+            });
+
+            function drawCover(image) {
+                const canvasRatio = canvas.width / canvas.height;
+                const imageRatio = image.width / image.height;
+                let drawWidth = canvas.width;
+                let drawHeight = canvas.height;
+                let offsetX = 0;
+                let offsetY = 0;
+
+                if (imageRatio > canvasRatio) {
+                    drawHeight = canvas.height;
+                    drawWidth = drawHeight * imageRatio;
+                    offsetX = (canvas.width - drawWidth) / 2;
+                } else {
+                    drawWidth = canvas.width;
+                    drawHeight = drawWidth / imageRatio;
+                    offsetY = (canvas.height - drawHeight) / 2;
+                }
+
+                context.clearRect(0, 0, canvas.width, canvas.height);
+                context.drawImage(image, offsetX, offsetY, drawWidth, drawHeight);
+            }
+
+            function render() {
+                const frame = Math.min(frameCount - 1, Math.max(0, Math.round(sequence.frame)));
+                const image = images[frame];
+                if (!image || !image.complete || frame === lastRenderedFrame) {
+                    return;
+                }
+
+                drawCover(image);
+                lastRenderedFrame = frame;
+
+                if (frame >= frameCount - 8 && explodedCueArmed) {
+                    explodedCueArmed = false;
+                    playExplodedCue();
+                }
+
+                if (frame < frameCount - 40) {
+                    explodedCueArmed = true;
+                }
+            }
+
+            updatePreloader();
+            const imageCacheReady = [];
+
+            for (let index = 0; index < frameCount; index += 1) {
+                const image = new Image();
+                const imageReady = new Promise((resolve) => {
+                    image.onload = () => {
+                        loadedFrames += 1;
+                        updatePreloader();
+                        if (index === 0) {
+                            render();
+                        }
+                        resolve();
+                    };
+                    image.onerror = () => {
+                        loadedFrames += 1;
+                        updatePreloader();
+                        resolve();
+                    };
+                });
+                image.src = framePath(index);
+                images.push(image);
+                imageCacheReady.push(imageReady);
+            }
+
+            const heroTimeline = gsap.timeline({
+                defaults: { ease: "none" },
+                scrollTrigger: {
+                    trigger: ".exploded-scroll",
+                    start: "top top",
+                    end: "bottom bottom",
+                    scrub: 0.7,
+                    invalidateOnRefresh: true
+                }
+            });
+
+            heroTimeline
+                .to(sequence, {
+                    frame: frameCount - 1,
+                    snap: "frame",
+                    onUpdate: render
+                }, 0)
+                .fromTo("#car-sequence", {
+                    "--depth-shadow-x": "0px",
+                    "--depth-shadow-y": "10px",
+                    "--depth-shadow-blur": "12px",
+                    "--depth-shadow-opacity": 0.34,
+                    "--ambient-shadow-blur": "18px",
+                    "--ambient-shadow-opacity": 0.18
+                }, {
+                    "--depth-shadow-x": "-18px",
+                    "--depth-shadow-y": "44px",
+                    "--depth-shadow-blur": "54px",
+                    "--depth-shadow-opacity": 0.14,
+                    "--ambient-shadow-blur": "64px",
+                    "--ambient-shadow-opacity": 0.08,
+                    duration: 1
+                }, 0)
+                .fromTo(".sequence-card", {
+                    "--panel-shadow-y": "12px",
+                    "--panel-shadow-blur": "28px",
+                    "--panel-shadow-opacity": 0.34,
+                    "--panel-red-opacity": 0.04,
+                    autoAlpha: 0,
+                    x: 240,
+                    y: 70,
+                    scale: 0.64,
+                    rotateX: 10,
+                    rotateY: -38,
+                    rotateZ: 3,
+                    filter: "brightness(0.48) saturate(0.78) blur(8px)"
+                }, {
+                    "--panel-shadow-y": "34px",
+                    "--panel-shadow-blur": "86px",
+                    "--panel-shadow-opacity": 0.5,
+                    "--panel-red-opacity": 0.14,
+                    autoAlpha: 1,
+                    x: 0,
+                    y: 0,
+                    scale: 1,
+                    rotateX: 0,
+                    rotateY: -8,
+                    rotateZ: 0,
+                    filter: "brightness(1.04) saturate(1.12) blur(0px)",
+                    duration: 0.28,
+                    ease: "power3.out"
+                }, 0.12)
+                .to(".sequence-card", {
+                    "--panel-shadow-y": "48px",
+                    "--panel-shadow-blur": "110px",
+                    "--panel-shadow-opacity": 0.38,
+                    "--panel-red-opacity": 0.09,
+                    y: -24,
+                    rotateY: 7,
+                    rotateX: -2,
+                    duration: 0.56,
+                    ease: "none"
+                }, 0.4)
+                .fromTo(".hud-left .glass-panel", {
+                    x: -38,
+                    opacity: 0
+                }, {
+                    x: 0,
+                    opacity: 1,
+                    stagger: 0.07,
+                    duration: 0.25
+                }, 0.05)
+                .fromTo(".chassis-note", {
+                    y: 70,
+                    opacity: 0
+                }, {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.26
+                }, 0.16)
+                .fromTo(".callout-engine", {
+                    x: 120,
+                    y: -30,
+                    opacity: 0
+                }, {
+                    x: 0,
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.2
+                }, 0.42)
+                .fromTo(".engine-hud", {
+                    x: -72,
+                    opacity: 0
+                }, {
+                    x: 0,
+                    opacity: 1,
+                    duration: 0.24,
+                    ease: "power3.out"
+                }, 0.5)
+                .fromTo(".callout-wheels", {
+                    x: -140,
+                    y: 35,
+                    opacity: 0
+                }, {
+                    x: 0,
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.2
+                }, 0.62)
+                .fromTo(".bg-911", {
+                    y: 90,
+                    opacity: 0.55
+                }, {
+                    y: -90,
+                    opacity: 1,
+                    duration: 1
+                }, 0)
+                .fromTo(".scroll-meter", {
+                    scaleY: 0.2
+                }, {
+                    scaleY: 1,
+                    duration: 1
+                }, 0);
+
+            gsap.from(".grid .glass-panel", {
+                scrollTrigger: {
+                    trigger: ".grid",
+                    start: "top 78%",
+                    toggleActions: "play none none reverse"
+                },
+                y: 42,
+                opacity: 0,
+                duration: 0.75,
+                ease: "power3.out",
+                stagger: 0.08
+            });
+
+            window.addEventListener("resize", () => {
+                lastRenderedFrame = -1;
+                render();
+                ScrollTrigger.refresh();
+            });
+
+            function unlockExperience() {
+                preloader?.classList.add("is-hidden");
+                document.body.classList.remove("is-loading");
+                lenis.start();
+            }
+
+            Promise.all([windowLoaded, Promise.all(imageCacheReady), minimumPreloaderTime]).then(() => {
+                loadedFrames = frameCount;
+                updatePreloader();
+                lastRenderedFrame = -1;
+                render();
+                ScrollTrigger.refresh();
+
+                if (!preloader) {
+                    unlockExperience();
+                    return;
+                }
+
+                gsap.to(preloader, {
+                    autoAlpha: 0,
+                    duration: 0.9,
+                    ease: "power3.inOut",
+                    onComplete: unlockExperience
+                });
+            });
+        });
+    </script>
+</body></html>

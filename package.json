@@ -1,0 +1,12 @@
+{
+  "name": "porsche-gt2rs",
+  "version": "1.0.0",
+  "description": "Porsche GT2 RS — Interactive Engineering Dashboard",
+  "main": "server.cjs",
+  "scripts": {
+    "start": "node server.cjs",
+    "dev": "node server.cjs 3000"
+  },
+  "keywords": ["porsche", "gt2rs", "dashboard"],
+  "license": "MIT"
+}
