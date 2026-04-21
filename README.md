@@ -47,8 +47,6 @@ A fully client-side, single-page experience that transforms the browser into a P
 ```
 PORSCHE/
 ├── DASH.html          # Single-page application (HTML + CSS + JS)
-├── server.cjs         # Zero-dependency Node.js static file server
-├── package.json       # Project metadata & scripts
 ├── IMG/               # 240 scroll-sequence frames (ezgif-frame-001..240.jpg)
 └── asset/
     └── Porsche.jpg    # Hero reference image
@@ -61,7 +59,6 @@ PORSCHE/
 ### Prerequisites
 
 - Any modern browser (Chrome, Firefox, Edge, Safari)
-- [Node.js](https://nodejs.org/) v16+ *(only needed for the local dev server)*
 
 ### Run Locally
 
@@ -69,21 +66,13 @@ PORSCHE/
 # Clone the repo
 git clone https://github.com/hrdx11/Antigrav.git
 cd Antigrav/PORSCHE
-
-# Start the dev server
-npm start
-# → Porsche GT2 RS server running at http://localhost:8010
-
-# Or specify a custom port
-npm run dev
-# → http://localhost:3000
 ```
 
-Or simply open `DASH.html` directly in a browser — everything loads from CDNs.
+Then open `DASH.html` directly in your browser — everything loads from CDNs, no setup needed.
 
-### Deployed on Vercel
+### Live Demo
 
-The project is deployed as part of the [Antigrav](https://github.com/hrdx11/Antigrav) monorepo. Visit the `/porsche` route on the live site.
+The project is deployed as part of the [Antigrav](https://github.com/hrdx11/Antigrav) monorepo on Vercel. Visit the `/porsche` route on the live site.
 
 ---
 
@@ -98,7 +87,6 @@ The project is deployed as part of the [Antigrav](https://github.com/hrdx11/Anti
 | **Canvas** | Vanilla Canvas 2D — frame-by-frame sequence renderer |
 | **Audio** | Web Audio API — procedural sound synthesis (no audio files) |
 | **Fonts** | Space Grotesk (display/labels), Inter (body) — via Google Fonts |
-| **Server** | Node.js `http` module — 43-line zero-dependency static server |
 
 ---
 
@@ -124,7 +112,7 @@ The project is deployed as part of the [Antigrav](https://github.com/hrdx11/Anti
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see [package.json](package.json) for details.
+This project is licensed under the **MIT License**.
 
 ---
 
