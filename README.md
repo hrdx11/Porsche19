@@ -47,6 +47,7 @@ A fully client-side, single-page experience that transforms the browser into a P
 ```
 PORSCHE/
 ├── DASH.html          # Single-page application (HTML + CSS + JS)
+├── README.md          # Project documentation
 ├── IMG/               # 240 scroll-sequence frames (ezgif-frame-001..240.jpg)
 └── asset/
     └── Porsche.jpg    # Hero reference image
