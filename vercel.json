@@ -19,6 +19,46 @@
           "value": "public, max-age=31536000, immutable"
         }
       ]
+    },
+    {
+      "source": "/(.*).js",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    },
+    {
+      "source": "/(.*).html",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=0, must-revalidate"
+        }
+      ]
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/IMG/(.*)",
+      "destination": "/IMG/$1"
+    },
+    {
+      "source": "/asset/(.*)",
+      "destination": "/asset/$1"
+    },
+    {
+      "source": "/DASH.js",
+      "destination": "/DASH.js"
+    },
+    {
+      "source": "/tw-config.js",
+      "destination": "/tw-config.js"
     }
   ]
 }
