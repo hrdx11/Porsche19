@@ -21,7 +21,7 @@
       ]
     },
     {
-      "source": "/(.*).js",
+      "source": "/(.*).css",
       "headers": [
         {
           "key": "Cache-Control",
@@ -30,7 +30,7 @@
       ]
     },
     {
-      "source": "/(.*).css",
+      "source": "/(.*).js",
       "headers": [
         {
           "key": "Cache-Control",
@@ -49,6 +49,22 @@
     }
   ],
   "rewrites": [
+    {
+      "source": "/IMG/(.*)",
+      "destination": "/IMG/$1"
+    },
+    {
+      "source": "/asset/(.*)",
+      "destination": "/asset/$1"
+    },
+    {
+      "source": "/DASH.js",
+      "destination": "/DASH.js"
+    },
+    {
+      "source": "/tw-config.js",
+      "destination": "/tw-config.js"
+    },
     {
       "source": "/(.*)",
       "destination": "/index.html"
